@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Taptaza — source-faithful UX prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#0F9D58;
+  --brand-deep:#07723B;
+  --brand-light:#6FC493;
+  --brand-soft:#E8F5EE;
+  --bg:#FAFAF7;
+  --surface:#FFFFFF;
+  --surface-soft:#F2F2ED;
+  --text:#0A0A0A;
+  --muted:#6B6B66;
+  --faint:#8E8E87;
+  --border:#ECECE7;
+  --border-strong:#E3E3DC;
+  --info-soft:#EEF2F7;
+  --danger-soft:#FDECEC;
+  --warning-soft:#FDF5E4;
+  --danger:#E5484D;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#eef0ec;color:var(--text);font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+svg{display:block}
+
+.phone{
+  width:min(100%,430px);
+  height:100dvh;
+  min-height:700px;
+  margin:0 auto;
+  background:var(--bg);
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 0 36px rgba(0,0,0,.09);
+}
+.viewport{
+  height:calc(100% - 88px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+}
+.viewport::-webkit-scrollbar{display:none}
+.page{
+  min-height:100%;
+  background:var(--bg);
+  padding:8px 16px 32px;
+}
+.page.orders{padding-top:12px}
+.page.subs{padding-top:0}
+.page.profile{padding-top:8px}
+
+.card{
+  width:100%;
+  padding:16px;
+  background:var(--surface);
+  border:1.2px solid var(--border);
+  border-radius:20px;
+  box-shadow:0 4px 10px rgba(33,60,48,.063);
+}
+.gap12{height:12px}
+.gap16{height:16px}
+.section-label{
+  font-size:15px;
+  line-height:1.3;
+  font-weight:700;
+  margin:0 0 8px;
+}
+.title-medium{font-size:15px;line-height:1.3;font-weight:600}
+.title-large{font-size:17px;line-height:1.3;font-weight:600}
+.body{font-size:15px;line-height:1.5;font-weight:500}
+.body-med{font-size:13px;line-height:1.5;font-weight:500;color:var(--muted)}
+.body-small{font-size:12px;line-height:1.3;font-weight:500;color:var(--muted)}
+.row{display:flex;align-items:center}
+.row-top{display:flex;align-items:flex-start}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.flex1{flex:1;min-width:0}
+.icon{width:20px;height:20px;flex:0 0 auto}
+.icon16{width:16px;height:16px;flex:0 0 auto}
+.icon24{width:24px;height:24px;flex:0 0 auto}
+.icon-muted{color:var(--muted)}
+.icon-green{color:var(--brand)}
+.icon-deep{color:var(--brand-deep)}
+.tappable{
+  margin:-2px -2px 0;
+  padding:8px;
+  border-radius:12px;
+  user-select:none;
+}
+.tappable:active{background:rgba(15,157,88,.06)}
+.addr-name{font-size:15px;font-weight:600;line-height:1.3}
+.addr-line{
+  font-size:12px;line-height:1.3;font-weight:500;color:var(--muted);
+  margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.btn-outline{
+  width:100%;
+  min-height:50px;
+  border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  line-height:1.3;
+  font-weight:700;
+}
+.btn-outline.compact{min-height:48px;font-size:15px}
+.btn-filled{
+  min-height:48px;
+  border:0;
+  border-radius:14px;
+  background:var(--brand);
+  color:#fff;
+  font-weight:800;
+  font-size:17px;
+  line-height:1.3;
+  padding:0 18px;
+}
+.btn-filled.full{width:100%;height:52px;font-size:16px;font-weight:700}
+.btn-filled:disabled{background:rgba(15,157,88,.5);cursor:default}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.type-chip{
+  min-height:69px;
+  border-radius:14px;
+  border:1.2px solid var(--border);
+  background:var(--surface-soft);
+  padding:10px;
+  display:flex;
+  align-items:center;
+  text-align:left;
+  color:var(--text);
+}
+.type-chip.selected{
+  background:var(--brand-soft);
+  border:1.8px solid var(--brand-light);
+}
+.type-chip .type-icon{margin-right:6px;color:var(--muted)}
+.type-chip.selected .type-icon{color:var(--brand-deep)}
+.type-chip .type-title{font-size:13px;line-height:1.5;font-weight:700}
+.type-chip.selected .type-title{color:var(--brand-deep)}
+.type-sub{font-size:12px;line-height:1.3;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.counter{
+  background:var(--surface-soft);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+}
+.counter-title{font-size:14px;font-weight:600;line-height:1.3}
+.counter-sub{font-size:12px;color:var(--muted);line-height:1.3;margin-top:2px}
+.counter-controls{display:flex;align-items:center;margin-left:10px}
+.circle-btn{
+  width:40px;height:40px;border-radius:20px;border:0;display:grid;place-items:center;
+}
+.circle-btn.minus{background:#E4EAE6;color:var(--brand-deep)}
+.circle-btn.plus{background:var(--brand-deep);color:white}
+.circle-btn:disabled{opacity:.35}
+.qty{width:32px;text-align:center;font-size:15px;font-weight:600}
+.divider{border:0;border-top:1px solid var(--border);margin:10px 0}
+.toggle-row{min-height:56px;display:flex;align-items:center;justify-content:space-between}
+.toggle-title{font-size:14px;font-weight:600}
+.toggle-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.switch{
+  width:52px;height:32px;border:0;padding:3px;border-radius:999px;background:#D9DDD9;transition:.16s;
+}
+.switch:after{
+  content:"";display:block;width:26px;height:26px;background:white;border-radius:50%;
+  box-shadow:0 1px 3px rgba(0,0,0,.18);transition:.16s;
+}
+.switch.on{background:var(--brand)}
+.switch.on:after{transform:translateX(20px)}
+
+.tariff-row{
+  border-radius:12px;
+  border:1.2px solid var(--border);
+  background:var(--surface-soft);
+  padding:12px;
+  display:flex;
+  align-items:center;
+}
+.tariff-row.selected{
+  border:1.8px solid var(--brand-light);
+  background:var(--brand-soft);
+}
+.tariff-title{font-size:15px;font-weight:600}
+.tariff-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.tariff-price{font-size:15px;font-weight:600;color:var(--brand-deep)}
+
+.field{
+  width:100%;min-height:50px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  color:var(--text);outline:0;
+  font-size:15px;font-weight:500;
+}
+.field:focus{border:1.7px solid var(--brand)}
+.promo-line{display:flex;gap:8px;align-items:stretch}
+.promo-input-wrap{position:relative;flex:1}
+.promo-input-wrap .field{padding-left:43px}
+.field-icon{position:absolute;left:14px;top:15px;color:var(--muted)}
+.comment-wrap{position:relative}
+.comment-label{
+  position:absolute;z-index:2;left:11px;top:-8px;background:#fff;padding:0 4px;
+  color:var(--brand);font-size:12px;letter-spacing:.4px
+}
+textarea.field{resize:none;min-height:86px;padding-top:17px}
+.promo-applied{
+  display:none;padding:12px;border-radius:12px;background:var(--brand-soft);
+  border:1px solid var(--brand-light);align-items:center;gap:8px
+}
+.promo-applied.show{display:flex}
+
+.summary{background:var(--brand-soft)}
+.price-line{display:flex;align-items:center;justify-content:space-between;font-size:13px;line-height:1.5;color:var(--muted);padding-bottom:4px}
+.price-line b{color:var(--text);font-weight:500}
+.price-line.total{font-size:15px;font-weight:700;color:var(--text)}
+.price-line.total b{color:var(--brand-deep);font-weight:700}
+
+/* Flutter-like bottom tab bar */
+.bottom{
+  height:88px;
+  padding:0 12px 10px;
+  background:var(--bg);
+  position:absolute;left:0;right:0;bottom:0;z-index:40;
+  display:flex;align-items:flex-end;
+}
+.tabbar{
+  width:100%;
+  padding:7px 8px;
+  background:#fff;
+  border:1.2px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 2px 10px rgba(10,10,10,.04);
+  display:flex;
+}
+.tab{
+  flex:1;border:0;background:none;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;padding:6px 2px;min-width:0;
+}
+.tab-icon-wrap{
+  padding:6px 13px;border-radius:999px;color:var(--muted);
+}
+.tab.active .tab-icon-wrap{background:var(--text);color:white}
+.tab-label{
+  font-size:12px;line-height:1.3;font-weight:500;color:var(--muted);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%
+}
+.tab.active .tab-label{color:var(--brand-deep);font-weight:700}
+
+/* Modal sheet exactly follows source */
+.scrim{
+  position:absolute;inset:0;background:rgba(0,0,0,.28);display:none;z-index:90;align-items:flex-end;
+}
+.scrim.show{display:flex}
+.sheet{
+  width:100%;background:#fff;border-radius:24px 24px 0 0;padding:12px 16px 16px;max-height:70%;overflow:auto
+}
+.handle{width:40px;height:4px;background:var(--border);border-radius:999px;margin:0 auto 12px}
+.sheet-title{font-size:15px;font-weight:600;margin-bottom:8px}
+.sheet-address{
+  padding:12px 12px;border-radius:14px;background:var(--surface-soft);margin-bottom:6px;display:flex;gap:10px;align-items:center
+}
+.sheet-address.selected{background:var(--brand-soft)}
+.radio{width:20px;height:20px;border:2px solid var(--muted);border-radius:50%;position:relative;flex:0 0 auto}
+.sheet-address.selected .radio{border-color:var(--brand-deep)}
+.sheet-address.selected .radio:after{content:"";position:absolute;inset:4px;background:var(--brand-deep);border-radius:50%}
+
+/* Orders / subscriptions source hero */
+.hero{
+  position:relative;overflow:hidden;background:linear-gradient(135deg,#0A0A0A,#1A1A19);
+  border-radius:0 0 30px 30px;padding:16px 16px 18px;color:white
+}
+.hero:after{
+  content:"";position:absolute;width:182px;height:182px;border-radius:50%;background:rgba(255,255,255,.08);right:-36px;top:-44px
+}
+.hero h1{position:relative;z-index:1;margin:0;font-size:24px;line-height:1.15;font-weight:700}
+.hero p{position:relative;z-index:1;margin:4px 0 0;font-size:12px;line-height:1.3;color:rgba(255,255,255,.84)}
+.filter-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{
+  border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 12px;white-space:nowrap;
+  color:var(--muted);font-size:12px;font-weight:600
+}
+.filter-chip.selected{background:var(--text);border-color:var(--text);color:white}
+.pickup-card{
+  background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;
+  box-shadow:0 2px 10px rgba(10,10,10,.04)
+}
+.pickup-card.selected{background:#F4FAF6;border:1.4px solid var(--brand)}
+.status-pill{display:inline-flex;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.info-pill{background:var(--info-soft);color:#2C6BF2}
+.success-pill{background:var(--brand-soft);color:var(--brand-deep)}
+.order-card{margin-bottom:10px}
+.order-card .top{display:flex;justify-content:space-between;gap:8px}
+.order-card .date{font-size:15px;font-weight:600}
+.order-card .money{font-size:15px;font-weight:600;color:var(--brand-deep)}
+.order-location{display:flex;align-items:center;gap:5px;margin-top:6px;color:var(--muted);font-size:12px}
+.order-meta{display:flex;gap:8px;align-items:center;margin-top:10px}
+
+/* subscription source */
+.featured{
+  padding:18px;background:var(--text);border-radius:24px;color:white;box-shadow:0 2px 10px rgba(10,10,10,.04)
+}
+.featured .eyebrow{font-size:12px;color:rgba(255,255,255,.74);font-weight:800}
+.featured h2{font-size:28px;line-height:1.15;margin:10px 0 4px}
+.featured p{color:rgba(255,255,255,.76);font-size:13px}
+.feature-price{font-size:24px;font-weight:800;margin-top:12px}
+.plan-card{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.plan-radio{margin-top:3px}
+.sale-pill{padding:2px 6px;background:var(--brand-soft);border-radius:999px;color:var(--brand-deep);font-size:12px}
+
+/* Profile - source-like tokens */
+.profile-hero{
+  padding:18px;border-radius:0 0 24px 24px;background:linear-gradient(135deg,#0A0A0A,#1A1A19);color:white
+}
+.avatar{
+  width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.13);display:grid;place-items:center;color:white
+}
+.profile-name{font-size:20px;font-weight:800}
+.profile-phone{font-size:12px;color:rgba(255,255,255,.78);margin-top:3px}
+.menu-item{
+  display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)
+}
+.menu-item:last-child{border-bottom:0}
+.soft-icon{width:44px;height:44px;border-radius:12px;background:var(--brand-soft);color:var(--brand-deep);display:grid;place-items:center}
+.menu-title{font-size:15px;font-weight:600}
+.menu-sub{font-size:12px;color:var(--muted)}
+
+/* Tracking page source */
+.tracking{
+  background:#fff;
+  min-height:100%;
+  padding-bottom:28px;
+}
+.appbar{
+  height:58px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid rgba(236,236,231,.35);
+  position:sticky;top:0;background:rgba(255,255,255,.97);z-index:20
+}
+.back{
+  width:40px;height:40px;border:0;background:transparent;border-radius:50%;display:grid;place-items:center
+}
+.appbar-title{font-size:17px;font-weight:600}
+.tracking-body{padding:18px 24px 24px}
+.timer-banner{
+  border:1px solid var(--border);border-radius:20px;padding:16px;background:#fff;box-shadow:0 2px 10px rgba(10,10,10,.04)
+}
+.timer-title{font-size:15px;font-weight:700}
+.timer-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.timer-value{font-size:24px;font-weight:800;margin-left:auto}
+.progress{height:7px;background:var(--surface-soft);border-radius:999px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;background:var(--brand);transition:width .25s}
+.map{
+  margin-top:12px;height:205px;border-radius:20px;overflow:hidden;border:1px solid var(--border);
+  background:
+    linear-gradient(27deg, transparent 45%, rgba(255,255,255,.88) 46%, rgba(255,255,255,.88) 51%, transparent 52%),
+    linear-gradient(115deg, transparent 42%, rgba(255,255,255,.78) 43%, rgba(255,255,255,.78) 49%, transparent 50%),
+    linear-gradient(145deg,#E2E9E1,#F2F5F0);
+  position:relative
+}
+.map .dest,.map .courier{position:absolute;width:20px;height:20px;border-radius:50%;border:4px solid white;box-shadow:0 2px 7px rgba(0,0,0,.18)}
+.map .dest{left:23%;bottom:25%;background:var(--brand-deep)}
+.map .courier{right:27%;top:27%;background:#111}
+.search-card{margin-top:12px}
+.search-stage{display:flex;gap:7px;margin-top:12px}
+.search-dot{height:7px;flex:1;border-radius:999px;background:var(--surface-soft)}
+.search-dot.on{background:var(--brand)}
+.courier-avatar{
+  width:68px;height:68px;border-radius:50%;background:#E8ECF2;color:var(--brand-deep);display:grid;place-items:center
+}
+.action-circle{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:#fff;display:grid;place-items:center}
+.meta-wrap{display:flex;gap:8px;flex-wrap:wrap}
+.track-row{display:flex;justify-content:space-between;gap:12px;margin-top:9px;font-size:13px}
+.track-row span:first-child{color:var(--muted)}
+.setup-row{display:flex;align-items:center;gap:12px}
+.badge-bags{padding:6px 12px;background:var(--surface-soft);border-radius:12px;font-size:13px;font-weight:700}
+.history-item{display:flex;gap:10px;padding:7px 0}
+.history-dot{width:10px;height:10px;border-radius:50%;background:var(--brand);margin-top:5px}
+.history-label{font-size:13px;font-weight:600}
+.history-time{font-size:12px;color:var(--muted)}
+.cta-gradient{
+  width:100%;height:52px;border:0;border-radius:14px;color:#fff;font-size:17px;font-weight:800;
+  background:linear-gradient(135deg,#0F9D58,#0B8A4A);box-shadow:0 8px 20px rgba(7,114,59,.2)
+}
+.secondary-cta{
+  width:100%;height:50px;border:1.5px solid var(--border);border-radius:14px;background:#fff;color:var(--text);font-size:17px;font-weight:700
+}
+
+.toast{
+  position:absolute;z-index:120;left:50%;bottom:104px;transform:translate(-50%,12px);
+  background:#20221f;color:#fff;border-radius:999px;padding:10px 14px;font-size:12px;
+  opacity:0;pointer-events:none;transition:.2s;white-space:nowrap
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hidden{display:none!important}
+
+@media(min-width:650px){
+  body{padding:24px}
+  .phone{height:calc(100dvh - 48px);border-radius:28px}
+}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="viewport" id="viewport">
+
+    <!-- HOME: faithful to HomePageV2 -> CreateOrderPageV2(embedded:true) -->
+    <main id="homePage" class="page">
+      <section class="card">
+        <div class="section-label">Адрес вывоза</div>
+        <div class="tappable" id="addressPickerBtn">
+          <div class="row">
+            <svg class="icon icon-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+            <div style="width:8px"></div>
+            <div class="flex1">
+              <div class="addr-name" id="addressName">Home</div>
+              <div class="addr-line" id="addressLine">Almaty, Abylai Khan Avenue 15</div>
+            </div>
+            <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <button class="btn-outline" id="addAddressBtn">
+          <svg class="icon16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Добавить адрес
+        </button>
+      </section>
+
+      <div class="gap12"></div>
+
+      <section class="card">
+        <div class="section-label">Время вывоза</div>
+        <div class="type-grid">
+          <button class="type-chip selected" data-pickup="ASAP">
+            <svg class="icon type-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13h5.7L9.8 22 19.2 10H13.4L13 2Z"/></svg>
+            <div class="flex1"><div class="type-title">Срочно</div><div class="type-sub">Как можно скорее</div></div>
+          </button>
+          <button class="type-chip" data-pickup="SCHEDULED">
+            <svg class="icon type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+            <div class="flex1"><div class="type-title">Запланировать</div><div class="type-sub" id="scheduleText">Выбрать дату</div></div>
+          </button>
+        </div>
+      </section>
+
+      <div class="gap12"></div>
+
+      <section class="card">
+        <div class="section-label" style="margin-bottom:10px">Состав пакетов</div>
+        <div class="counter">
+          <div class="flex1">
+            <div class="counter-title">Несортированный 30л</div>
+            <div class="counter-sub">Максимум 4 несортированных пакета всего</div>
+          </div>
+          <div class="counter-controls">
+            <button class="circle-btn minus" data-minus="u30">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/></svg>
+            </button>
+            <div class="qty" id="u30Val">1</div>
+            <button class="circle-btn plus" data-plus="u30">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="height:8px"></div>
+        <div class="counter">
+          <div class="flex1">
+            <div class="counter-title">Несортированный 60л</div>
+            <div class="counter-sub">+100 ₸ за каждый 60л пакет</div>
+          </div>
+          <div class="counter-controls">
+            <button class="circle-btn minus" data-minus="u60">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/></svg>
+            </button>
+            <div class="qty" id="u60Val">0</div>
+            <button class="circle-btn plus" data-plus="u60">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="toggle-row">
+          <div><div class="toggle-title">Пластик</div><div class="toggle-sub">макс. 1 пакет</div></div>
+          <button class="switch" data-toggle="plastic"></button>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-title">Бумага</div><div class="toggle-sub">макс. 1 пакет</div></div>
+          <button class="switch" data-toggle="paper"></button>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-title">Стекло</div><div class="toggle-sub">макс. 1 пакет</div></div>
+          <button class="switch" data-toggle="glass"></button>
+        </div>
+      </section>
+
+      <div class="gap12"></div>
+
+      <section class="card">
+        <div class="section-label">Тариф</div>
+        <div class="tariff-row selected" data-tariff="standard">
+          <div class="flex1">
+            <div class="tariff-title">Standard</div>
+            <div class="tariff-sub"><span id="tariffBagCount">1</span> пак. • 35 мин</div>
+          </div>
+          <div class="tariff-price" id="tariffPrice">499 ₸</div>
+        </div>
+      </section>
+
+      <div class="gap12"></div>
+
+      <section class="card">
+        <div class="section-label">Промокод и комментарий</div>
+        <div class="promo-applied" id="promoApplied">
+          <svg class="icon icon-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 13 11 22l-9-9V4h9l9 9Z"/><circle cx="7.5" cy="9.5" r="1.3"/></svg>
+          <div class="body-small" style="color:var(--brand-deep);flex:1">TAZA10 • -10%</div>
+          <button id="removePromo" style="border:0;background:none;padding:5px;color:var(--muted)">
+            <svg class="icon16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="promo-line" id="promoInputRow">
+          <div class="promo-input-wrap">
+            <svg class="icon16 field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 13 11 22l-9-9V4h9l9 9Z"/><circle cx="7.5" cy="9.5" r="1.3"/></svg>
+            <input class="field" id="promo" placeholder="ПРОМОКОД" autocomplete="off">
+          </div>
+          <button class="btn-filled" id="applyPromo">Применить</button>
+        </div>
+        <div style="height:10px"></div>
+        <div class="comment-wrap">
+          <span class="comment-label">Комментарий</span>
+          <textarea class="field" id="comment" placeholder="Инструкции для курьера"></textarea>
+        </div>
+      </section>
+
+      <div class="gap12"></div>
+
+      <section class="card summary">
+        <div class="price-line"><span>Тариф (<span id="summaryBags">1</span> пак.)</span><b id="gross">499 ₸</b></div>
+        <div class="price-line hidden" id="discountLine"><span>Промокод TAZA10</span><b id="discount" style="color:var(--brand-deep)">−50 ₸</b></div>
+        <hr class="divider" style="margin:8px 0">
+        <div class="price-line total"><span>Итого</span><b id="total">499 ₸</b></div>
+        <div class="body-small" style="margin-top:4px">Финальная цена зависит от параметров заказа</div>
+      </section>
+
+      <div class="gap16"></div>
+      <button class="btn-filled full" id="submitOrder">Оформить заказ</button>
+    </main>
+
+    <!-- Orders page faithful to OrderHistoryPageV2 -->
+    <main id="ordersPage" class="page orders hidden">
+      <section class="hero">
+        <h1>История заказов</h1>
+        <p>Ваши предыдущие заявки</p>
+      </section>
+      <div class="gap12"></div>
+      <div class="filter-row">
+        <button class="filter-chip selected" data-filter="ALL">Все</button>
+        <button class="filter-chip" data-filter="COMPLETED">Выполненные</button>
+        <button class="filter-chip" data-filter="CANCELLED">Отменённые</button>
+      </div>
+      <div class="gap12"></div>
+      <div id="ordersList">
+        <article class="pickup-card order-card" data-status="COMPLETED">
+          <div class="top"><div class="date">02 июн. 2026, 17:15</div><div class="money">2300 ₸</div></div>
+          <div class="order-location">
+            <svg class="icon16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+            <span>Almaty, Abylai Khan Avenue 15</span>
+          </div>
+          <div class="order-meta">
+            <span class="status-pill success-pill">Выполнен</span>
+            <span class="body-small">2 пакетов</span>
+          </div>
+        </article>
+        <article class="pickup-card order-card" data-status="CANCELLED">
+          <div class="top"><div class="date">30 мая 2026, 12:40</div><div class="money">599 ₸</div></div>
+          <div class="order-location">
+            <svg class="icon16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+            <span>Almaty, Abylai Khan Avenue 15</span>
+          </div>
+          <div class="order-meta">
+            <span class="status-pill" style="background:var(--danger-soft);color:#C13B3B">Отменён</span>
+            <span class="body-small">1 пакет</span>
+          </div>
+        </article>
+      </div>
+      <div id="ordersEmpty" class="pickup-card hidden">Нет заказов</div>
+    </main>
+
+    <!-- Subscriptions page source-faithful -->
+    <main id="subsPage" class="page subs hidden">
+      <section class="hero">
+        <h1>Мои подписки</h1>
+        <p>Выберите подходящую подписку</p>
+      </section>
+      <div class="gap12"></div>
+
+      <section class="featured">
+        <div class="eyebrow">STANDARD</div>
+        <h2>8 вывозов</h2>
+        <p>До 2 пакетов за один вывоз • действует 30 дней</p>
+        <div class="feature-price">8 490 ₸</div>
+      </section>
+
+      <div style="height:10px"></div>
+
+      <section class="pickup-card selected plan-card" data-plan="8">
+        <div class="plan-radio">
+          <svg class="icon24 icon-deep" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5-5 1.4 1.4-6.4 6.4Z"/></svg>
+        </div>
+        <div class="flex1">
+          <div class="title-medium">8 вывозов</div>
+          <div class="body-small" style="margin-top:2px">8 вывозов • 2 пакетов</div>
+          <div class="row" style="gap:8px;margin-top:8px">
+            <div class="title-large" style="color:var(--brand-deep)">8 490 ₸</div>
+            <span class="sale-pill">-15% дешевле</span>
+          </div>
+          <div class="body-small" style="text-decoration:line-through;margin-top:2px">9 764 ₸</div>
+          <div style="height:8px"></div>
+          <button class="btn-filled" style="width:100%" id="buySub">Оформить подписку</button>
+        </div>
+      </section>
+
+      <section class="pickup-card plan-card" data-plan="12">
+        <div class="plan-radio">
+          <svg class="icon24 icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+        </div>
+        <div class="flex1">
+          <div class="title-medium">12 вывозов</div>
+          <div class="body-small" style="margin-top:2px">12 вывозов • 2 пакетов</div>
+          <div class="row" style="gap:8px;margin-top:8px">
+            <div class="title-large" style="color:var(--brand-deep)">11 990 ₸</div>
+            <span class="sale-pill">-15% дешевле</span>
+          </div>
+          <div class="body-small" style="text-decoration:line-through;margin-top:2px">13 789 ₸</div>
+        </div>
+      </section>
+
+      <div class="body-small" style="margin-top:8px">Ежемесячное списание, можно отменить в любой момент.</div>
+    </main>
+
+    <!-- Profile page follows source system style -->
+    <main id="profilePage" class="page profile hidden">
+      <section class="profile-hero">
+        <div class="row" style="gap:14px">
+          <div class="avatar">
+            <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.3 3.4-6.5 8-6.5s7.2 2.2 8 6.5"/></svg>
+          </div>
+          <div>
+            <div class="profile-name">Customer Demo</div>
+            <div class="profile-phone">+7 700 000 00 00</div>
+          </div>
+        </div>
+      </section>
+      <div class="gap12"></div>
+      <section class="pickup-card">
+        <div class="menu-item">
+          <div class="soft-icon">
+            <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+          </div>
+          <div class="flex1"><div class="menu-title">Адреса</div><div class="menu-sub">Управление адресами вывоза</div></div>
+          <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="menu-item">
+          <div class="soft-icon">
+            <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+          </div>
+          <div class="flex1"><div class="menu-title">Поддержка</div><div class="menu-sub">Вопросы и обращения</div></div>
+          <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="menu-item">
+          <div class="soft-icon">
+            <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg>
+          </div>
+          <div class="flex1"><div class="menu-title">Язык</div><div class="menu-sub">Русский</div></div>
+          <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+      </section>
+    </main>
+
+    <!-- Tracking: source-like CustomerOrderTrackingPageV3 -->
+    <main id="trackingPage" class="tracking hidden">
+      <header class="appbar">
+        <button class="back" id="trackingBack">
+          <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="appbar-title">Номер заказа #TPTZ26</div>
+      </header>
+      <div class="tracking-body">
+        <section class="timer-banner" id="timerBanner">
+          <div class="row-top">
+            <div class="flex1">
+              <div class="timer-title" id="timerTitle">Оплата заказа</div>
+              <div class="timer-sub" id="timerSubtitle">Осталось времени на оплату</div>
+            </div>
+            <div class="timer-value" id="timerValue">10:00</div>
+          </div>
+          <div class="progress"><div id="timerProgress" style="width:100%"></div></div>
+        </section>
+
+        <div class="map hidden" id="liveMap"><div class="dest"></div><div class="courier"></div></div>
+
+        <section class="pickup-card search-card hidden" id="searchCard">
+          <div class="title-medium">Поиск курьера</div>
+          <div class="body-small" id="searchStageLabel" style="margin-top:3px">Ищем доступных курьеров рядом</div>
+          <div class="search-stage"><div class="search-dot on"></div><div class="search-dot"></div><div class="search-dot"></div></div>
+        </section>
+
+        <div style="height:20px"></div>
+
+        <section class="pickup-card">
+          <div class="row-top">
+            <div class="courier-avatar">
+              <svg style="width:38px;height:38px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm-9 10c.7-5 3.7-8 9-8s8.3 3 9 8H3Z"/></svg>
+            </div>
+            <div style="width:16px"></div>
+            <div class="flex1">
+              <div class="title-large" id="courierTitle" style="font-size:20px">Курьер назначается</div>
+              <div class="row" style="gap:8px;margin-top:8px">
+                <svg class="icon" viewBox="0 0 24 24" fill="#F7B500"><path d="m12 2 3 6.2 6.8 1-4.9 4.8 1.2 6.8L12 17.6l-6.1 3.2 1.2-6.8-4.9-4.8 6.8-1L12 2Z"/></svg>
+                <div class="body" id="courierSubtitle">Ищем ближайшего курьера</div>
+              </div>
+            </div>
+            <button class="action-circle" id="callBtn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.5 3h3l1.3 4-2 1.5a15 15 0 0 0 6.7 6.7l1.5-2 4 1.3v3c0 1.1-.9 2-2 2C10.7 19.5 4.5 13.3 4.5 5c0-1.1.9-2 2-2Z"/></svg>
+            </button>
+          </div>
+          <hr class="divider" style="margin:14px 0">
+          <div class="meta-wrap">
+            <span class="status-pill info-pill" id="orderStatusPill">Заказ создан</span>
+            <span class="status-pill" id="paymentPill" style="background:var(--surface-soft);color:var(--muted)">Ожидание оплаты</span>
+          </div>
+          <div class="track-row"><span>Адрес вывоза</span><b id="trackAddress">Home</b></div>
+          <div class="track-row"><span>Оплата</span><b id="trackPayment">Ожидание оплаты</b></div>
+        </section>
+
+        <div style="height:18px"></div>
+
+        <section class="pickup-card">
+          <div class="title-large">Параметры заказа</div>
+          <div style="height:12px"></div>
+          <div class="setup-row">
+            <div class="soft-icon" style="background:var(--surface-soft);color:var(--muted)">
+              <svg class="icon24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></svg>
+            </div>
+            <div class="flex1">
+              <div class="title-medium" id="wasteLabel">Смешанный мусор</div>
+              <div class="body-med" id="pickupLabel">Как можно скорее</div>
+            </div>
+            <span class="badge-bags"><span id="trackBags">1</span> пакетов</span>
+          </div>
+          <div id="trackCommentWrap" class="hidden">
+            <hr class="divider" style="margin:14px 0">
+            <div class="body-small">Комментарий</div>
+            <div class="body-med" id="trackComment" style="color:var(--text);margin-top:3px"></div>
+          </div>
+        </section>
+
+        <div style="height:18px"></div>
+
+        <section class="pickup-card">
+          <div class="title-large">История статусов</div>
+          <div style="height:10px"></div>
+          <div id="history">
+            <div class="history-item"><div class="history-dot"></div><div><div class="history-label">Заказ создан</div><div class="history-time">только что</div></div></div>
+          </div>
+        </section>
+
+        <div style="height:12px"></div>
+        <button class="cta-gradient" id="primaryTrackingCta">Оплатить</button>
+        <div style="height:12px"></div>
+        <button class="secondary-cta" id="cancelOrder">Отменить заказ</button>
+        <div style="height:12px"></div>
+        <button class="secondary-cta" id="supportOrder">Проблема с заказом</button>
+      </div>
+    </main>
+  </div>
+
+  <nav class="bottom" id="bottomNav">
+    <div class="tabbar">
+      <button class="tab active" data-tab="home">
+        <div class="tab-icon-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg>
+        </div><div class="tab-label">Главная</div>
+      </button>
+      <button class="tab" data-tab="orders">
+        <div class="tab-icon-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14l-1 14H6L5 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        </div><div class="tab-label">Заказы</div>
+      </button>
+      <button class="tab" data-tab="subs">
+        <div class="tab-icon-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 2.8 5.8 6.4.9-4.6 4.5 1.1 6.3-5.7-3-5.7 3 1.1-6.3-4.6-4.5 6.4-.9L12 3Z"/></svg>
+        </div><div class="tab-label">Мои подписки</div>
+      </button>
+      <button class="tab" data-tab="profile">
+        <div class="tab-icon-wrap">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.3 3.4-6.5 8-6.5s7.2 2.2 8 6.5"/></svg>
+        </div><div class="tab-label">Профиль</div>
+      </button>
+    </div>
+  </nav>
+
+  <div class="scrim" id="addressSheet">
+    <div class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-title">Выберите адрес</div>
+      <button class="sheet-address selected" data-address="Home|Almaty, Abylai Khan Avenue 15">
+        <div class="radio"></div>
+        <div class="flex1" style="text-align:left">
+          <div class="title-medium">Home</div>
+          <div class="body-small">Almaty, Abylai Khan Avenue 15</div>
+        </div>
+      </button>
+      <button class="sheet-address" data-address="Office|Almaty, Abay Avenue 109">
+        <div class="radio"></div>
+        <div class="flex1" style="text-align:left">
+          <div class="title-medium">Office</div>
+          <div class="body-small">Almaty, Abay Avenue 109</div>
+        </div>
+      </button>
+      <div style="height:8px"></div>
+      <button class="btn-outline compact" id="sheetAddAddress">
+        <svg class="icon16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Добавить новый адрес
+      </button>
+    </div>
+  </div>
+
+  <div class="scrim" id="scheduleSheet">
+    <div class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-title">Выберите дату и время</div>
+      <input class="field" type="datetime-local" id="scheduleInput">
+      <div style="height:10px"></div>
+      <button class="btn-filled" style="width:100%" id="saveSchedule">Готово</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const $=q=>document.querySelector(q);
+const $$=q=>Array.from(document.querySelectorAll(q));
+const state={
+  addressName:"Home", addressLine:"Almaty, Abylai Khan Avenue 15",
+  pickup:"ASAP", scheduledFor:null,
+  u30:1,u60:0,plastic:false,paper:false,glass:false,
+  promo:false, comment:"", filter:"ALL",
+  trackingPhase:"payment", timerSeconds:600
+};
+
+function money(n){ return Math.round(n)+" ₸"; }
+function selectedItemsCount(){
+  return state.u30+state.u60+(state.plastic?1:0)+(state.paper?1:0)+(state.glass?1:0);
+}
+function grossPrice(){
+  const unsorted=state.u30+state.u60;
+  const sorted=(state.plastic?1:0)+(state.paper?1:0)+(state.glass?1:0);
+  const unsortedAmount=unsorted===0 ? 0 : 499+(unsorted-1)*100+state.u60*100;
+  return unsortedAmount+sorted*50;
+}
+function renderHome(){
+  $("#u30Val").textContent=state.u30;
+  $("#u60Val").textContent=state.u60;
+  $$(".switch").forEach(el=>el.classList.toggle("on",state[el.dataset.toggle]));
+  $$("[data-minus]").forEach(el=>{
+    const key=el.dataset.minus;
+    el.disabled=state[key]<=0;
+  });
+  $$("[data-plus]").forEach(el=>{
+    el.disabled=(state.u30+state.u60)>=4;
+  });
+  const bags=selectedItemsCount();
+  const gross=grossPrice();
+  const discount=state.promo?Math.min(gross,gross*.10):0;
+  const total=Math.max(0,gross-discount);
+  $("#tariffBagCount").textContent=bags;
+  $("#tariffPrice").textContent=money(gross);
+  $("#summaryBags").textContent=bags;
+  $("#gross").textContent=money(gross);
+  $("#discount").textContent="−"+money(discount);
+  $("#discountLine").classList.toggle("hidden",!state.promo);
+  $("#total").textContent=money(total);
+  $("#submitOrder").disabled=bags<=0;
+  $("#addressName").textContent=state.addressName;
+  $("#addressLine").textContent=state.addressLine;
+}
+function toast(msg){
+  const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1600);
+}
+function openSheet(id){$(id).classList.add("show")}
+function closeSheet(id){$(id).classList.remove("show")}
+$("#addressPickerBtn").onclick=()=>openSheet("#addressSheet");
+$("#addAddressBtn").onclick=()=>openSheet("#addressSheet");
+$("#sheetAddAddress").onclick=()=>toast("В UX-прототипе используются демонстрационные адреса");
+$("#addressSheet").onclick=e=>{if(e.target.id==="addressSheet")closeSheet("#addressSheet")}
+$$(".sheet-address").forEach(el=>el.onclick=()=>{
+  const [name,line]=el.dataset.address.split("|");
+  state.addressName=name; state.addressLine=line;
+  $$(".sheet-address").forEach(x=>x.classList.remove("selected"));
+  el.classList.add("selected");
+  renderHome();closeSheet("#addressSheet");
+});
+
+$$("[data-pickup]").forEach(el=>el.onclick=()=>{
+  state.pickup=el.dataset.pickup;
+  $$("[data-pickup]").forEach(x=>x.classList.toggle("selected",x.dataset.pickup===state.pickup));
+  if(state.pickup==="SCHEDULED") openSheet("#scheduleSheet");
+  else{state.scheduledFor=null;$("#scheduleText").textContent="Выбрать дату"}
+});
+$("#scheduleSheet").onclick=e=>{if(e.target.id==="scheduleSheet")closeSheet("#scheduleSheet")}
+$("#saveSchedule").onclick=()=>{
+  const v=$("#scheduleInput").value;
+  if(v){
+    const d=new Date(v); state.scheduledFor=d;
+    $("#scheduleText").textContent=d.toLocaleString("ru-RU",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+  }
+  closeSheet("#scheduleSheet");
+};
+
+$$("[data-minus]").forEach(el=>el.onclick=()=>{
+  const k=el.dataset.minus;if(state[k]>0)state[k]--;renderHome();
+});
+$$("[data-plus]").forEach(el=>el.onclick=()=>{
+  const k=el.dataset.plus;if(state.u30+state.u60<4)state[k]++;renderHome();
+});
+$$("[data-toggle]").forEach(el=>el.onclick=()=>{state[el.dataset.toggle]=!state[el.dataset.toggle];renderHome()});
+
+$("#applyPromo").onclick=()=>{
+  if($("#promo").value.trim().toUpperCase()==="TAZA10"){
+    state.promo=true;
+    $("#promoApplied").classList.add("show");
+    $("#promoInputRow").classList.add("hidden");
+    renderHome();
+  }else toast("Промокод недействителен");
+};
+$("#removePromo").onclick=()=>{
+  state.promo=false;$("#promo").value="";
+  $("#promoApplied").classList.remove("show");$("#promoInputRow").classList.remove("hidden");renderHome();
+};
+
+function showTab(tab){
+  const map={home:"#homePage",orders:"#ordersPage",subs:"#subsPage",profile:"#profilePage"};
+  ["#homePage","#ordersPage","#subsPage","#profilePage","#trackingPage"].forEach(id=>$(id).classList.add("hidden"));
+  $(map[tab]).classList.remove("hidden");
+  $("#bottomNav").classList.remove("hidden");
+  $$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+  $("#viewport").scrollTop=0;
+}
+$$(".tab").forEach(el=>el.onclick=()=>showTab(el.dataset.tab));
+
+$$("[data-filter]").forEach(el=>el.onclick=()=>{
+  state.filter=el.dataset.filter;
+  $$("[data-filter]").forEach(x=>x.classList.toggle("selected",x.dataset.filter===state.filter));
+  let visible=0;
+  $$("#ordersList [data-status]").forEach(card=>{
+    const show=state.filter==="ALL"||card.dataset.status===state.filter;
+    card.classList.toggle("hidden",!show);if(show)visible++;
+  });
+  $("#ordersEmpty").classList.toggle("hidden",visible!==0);
+});
+
+$$("[data-plan]").forEach(el=>el.onclick=()=>{
+  $$("[data-plan]").forEach(x=>x.classList.remove("selected"));
+  el.classList.add("selected");
+});
+$("#buySub").onclick=e=>{e.stopPropagation();toast("Подписка оформлена")};
+
+function showTracking(){
+  state.comment=$("#comment").value.trim();
+  $("#homePage").classList.add("hidden");
+  $("#trackingPage").classList.remove("hidden");
+  $("#bottomNav").classList.add("hidden");
+  $("#viewport").scrollTop=0;
+  $("#trackAddress").textContent=state.addressName;
+  $("#trackBags").textContent=selectedItemsCount();
+  $("#pickupLabel").textContent=state.pickup==="SCHEDULED"?"По расписанию":"Как можно скорее";
+  const mixed=(state.u30+state.u60)>0;
+  $("#wasteLabel").textContent=mixed?"Смешанный мусор":"Перерабатываемый";
+  $("#trackCommentWrap").classList.toggle("hidden",!state.comment);
+  $("#trackComment").textContent=state.comment;
+  state.trackingPhase="payment";
+  state.timerSeconds=600;
+  renderTracking();
+}
+$("#submitOrder").onclick=showTracking;
+$("#trackingBack").onclick=()=>showTab("home");
+
+let timerHandle=null;
+function renderTracking(){
+  if(timerHandle)clearInterval(timerHandle);
+  if(state.trackingPhase==="payment"){
+    $("#timerBanner").classList.remove("hidden");
+    $("#timerTitle").textContent="Оплата заказа";
+    $("#timerSubtitle").textContent="Осталось времени на оплату";
+    $("#liveMap").classList.add("hidden");
+    $("#searchCard").classList.add("hidden");
+    $("#courierTitle").textContent="Курьер назначается";
+    $("#courierSubtitle").textContent="Ищем ближайшего курьера";
+    $("#orderStatusPill").textContent="Заказ создан";
+    $("#paymentPill").textContent="Ожидание оплаты";
+    $("#paymentPill").style.background="var(--surface-soft)";
+    $("#paymentPill").style.color="var(--muted)";
+    $("#trackPayment").textContent="Ожидание оплаты";
+    $("#primaryTrackingCta").textContent="Оплатить";
+    $("#primaryTrackingCta").onclick=()=>{
+      state.trackingPhase="search";state.timerSeconds=1800;appendHistory("Поиск курьера");renderTracking();
+    };
+  }else if(state.trackingPhase==="search"){
+    $("#timerBanner").classList.remove("hidden");
+    $("#timerTitle").textContent="Поиск курьера";
+    $("#timerSubtitle").textContent="Окно поиска курьера";
+    $("#liveMap").classList.remove("hidden");
+    $("#searchCard").classList.remove("hidden");
+    $("#courierTitle").textContent="Курьер назначается";
+    $("#courierSubtitle").textContent="Ищем ближайшего курьера";
+    $("#orderStatusPill").textContent="Поиск курьера";
+    $("#paymentPill").textContent="Оплачено";
+    $("#paymentPill").style.background="var(--brand-soft)";
+    $("#paymentPill").style.color="var(--brand-deep)";
+    $("#trackPayment").textContent="Оплачено";
+    $("#primaryTrackingCta").textContent="Чат с курьером";
+    $("#primaryTrackingCta").onclick=()=>toast("Чат станет доступен после назначения курьера");
+    // UX demo: courier assigned after 5 sec, preserving source statuses
+    setTimeout(()=>{
+      if(state.trackingPhase==="search"){
+        state.trackingPhase="assigned";appendHistory("Курьер найден");renderTracking();
+      }
+    },5000);
+  }else{
+    $("#timerBanner").classList.add("hidden");
+    $("#liveMap").classList.remove("hidden");
+    $("#searchCard").classList.add("hidden");
+    $("#courierTitle").textContent="Dias";
+    $("#courierSubtitle").textContent="4.9 • Toyota Prius";
+    $("#orderStatusPill").textContent="Курьер принял заказ";
+    $("#paymentPill").textContent="Оплачено";
+    $("#paymentPill").style.background="var(--brand-soft)";
+    $("#paymentPill").style.color="var(--brand-deep)";
+    $("#trackPayment").textContent="Оплачено";
+    $("#primaryTrackingCta").textContent="Чат с курьером";
+    $("#primaryTrackingCta").onclick=()=>toast("Демо чата");
+  }
+  updateTimer();
+  if(state.trackingPhase!=="assigned"){
+    timerHandle=setInterval(()=>{state.timerSeconds=Math.max(0,state.timerSeconds-1);updateTimer()},1000);
+  }
+}
+function updateTimer(){
+  const m=Math.floor(state.timerSeconds/60),s=state.timerSeconds%60;
+  $("#timerValue").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  const total=state.trackingPhase==="payment"?600:1800;
+  $("#timerProgress").style.width=(state.timerSeconds/total*100)+"%";
+}
+function appendHistory(label){
+  const h=$("#history");
+  const div=document.createElement("div");div.className="history-item";
+  div.innerHTML='<div class="history-dot"></div><div><div class="history-label">'+label+'</div><div class="history-time">только что</div></div>';
+  h.appendChild(div);
+}
+$("#cancelOrder").onclick=()=>toast("Заказ успешно отменен");
+$("#supportOrder").onclick=()=>toast("Раздел поддержки");
+$("#callBtn").onclick=()=>toast(state.trackingPhase==="assigned"?"Звонок курьеру":"Номер курьера недоступен");
+
+renderHome();
+</script>
+</body>
+</html>
